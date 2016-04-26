@@ -7,6 +7,13 @@ var _ = require('lodash'),
 
 const URL_PATTERN = /https?:\/\/[^ ]+/g;
 
+if (process.argv.length < 3) {
+    console.log('Please specify a username');
+    process.exit(1);
+}
+
+var screenName = process.argv[2];
+
 function getLinks(data) {
     let matchLinks = tweet => tweet.match(URL_PATTERN);
 
@@ -26,7 +33,7 @@ function printLinks(links) {
     console.log(links);
 }
 
-timeline.get('talia')
+timeline.get(screenName)
     .then(getLinks)
     .then(followRedirects)
     .then(printLinks);
