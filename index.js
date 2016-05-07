@@ -1,25 +1,24 @@
 'use strict';
 
-var _ = require('lodash'),
+const _ = require('lodash'),
     Promise = require('bluebird'),
     timeline = require('./timeline'),
     followRedirect = require('./redirect');
-
-const URL_PATTERN = /https?:\/\/[^ ]+/g;
 
 if (process.argv.length < 3) {
     console.log('Please specify a username');
     process.exit(1);
 }
 
-var screenName = process.argv[2];
+const screenName = process.argv[2];
 
-function getLinks(data) {
-    let matchLinks = tweet => tweet.match(URL_PATTERN);
+const getTweets = (timeline) => _.map(timeline, 'text');
 
-    return _(data)
-        .map('text')
-        .map(matchLinks)
+function extractUrls(tweets) {
+    const urlMatches = (tweet) => tweet.match(/https?:\/\/[^ ]+/g);
+
+    return _(tweets)
+        .map(urlMatches)
         .filter()
         .flatten()
         .value();
@@ -29,11 +28,12 @@ function followRedirects(links) {
     return Promise.map(links, followRedirect);
 }
 
-function printLinks(links) {
-    console.log(links);
+function printUrls(urls) {
+    console.dir(urls, { colors: true });
 }
 
 timeline.get(screenName)
-    .then(getLinks)
+    .then(getTweets)
+    .then(extractUrls)
     .then(followRedirects)
-    .then(printLinks);
+    .then(printUrls);

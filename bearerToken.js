@@ -1,6 +1,6 @@
 'use strict';
 
-var rp = require('request-promise');
+const rp = require('request-promise');
 
 const TOKEN_URL = 'https://api.twitter.com/oauth2/token';
 

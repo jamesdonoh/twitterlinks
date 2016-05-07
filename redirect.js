@@ -1,6 +1,8 @@
 'use strict';
 
-var rp = require('request-promise');
+const rp = require('request-promise');
+
+const truncate = (str) => str.substring(0, 70);
 
 module.exports = function (url) {
     let options = {
@@ -9,5 +11,9 @@ module.exports = function (url) {
     };
 
     return rp(options)
-        .then(response => response.request.uri.href);
+        .then(response => response.request.uri.href)
+        .catch(err => {
+            console.error('Dereferencing %s failed: %s', url, truncate(err.message));
+            return url;
+        });
 };
